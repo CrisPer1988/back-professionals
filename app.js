@@ -9,6 +9,7 @@ const usersRouter = require("./routes/users.routes")
 const professionalsRouter = require("./routes/professionals.routes")
 const jobsRouter = require("./routes/jobs.routes")
 const reviewsRouter = require("./routes/reviews.routes")
+const categoriesRouter = require("./routes/categories.routes")
 
 const app = express()
 
@@ -23,6 +24,7 @@ app.use("/api/v1/users", usersRouter)
 app.use("/api/v1/professionals", professionalsRouter)
 app.use("/api/v1/jobs", jobsRouter)
 app.use("/api/v1/reviews", reviewsRouter)
+app.use("/api/v1/categories", categoriesRouter)
 
 app.all('*', (req, res, next) => {
   return next(

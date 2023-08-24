@@ -3,13 +3,14 @@ const express = require("express")
 const usersController = require("../controllers/users.controller")
 
 const validUser = require("../middlewares/users.middleware")
+const validationsUser = require("../middlewares/validations.middleware")
 
 const router = express.Router()
 
 router
 .route("/")
 .get(usersController.allUsers)
-.post(usersController.createUser)
+.post(validationsUser.createUser, usersController.createUser)
 
 router
 .route("/:id")

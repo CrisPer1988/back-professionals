@@ -21,6 +21,10 @@ const Professional = db.define('professionals', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    cat_name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     number_tel: {
         type: DataTypes.STRING,
         allowNull: false

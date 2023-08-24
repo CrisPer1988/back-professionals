@@ -7,30 +7,86 @@ const Review = require("../models/reviews.model");
 const Job = require("../models/jobs.model");
 const AppError = require("../utils/appError");
 
+const { Op, fn, col } = require('sequelize');
 
-exports.createProfessional = catchAsync(async(req, res) => {
-    const {name, email, password, name_category, number_tel} = req.body
 
-    const salt = await bcrypt.genSalt(8)
-    const encryptedPassword = await bcrypt.hash(password, salt);
+// exports.createProfessional = catchAsync(async(req, res) => {
+//     const {name, email, password, name_category, number_tel} = req.body
 
-    const professional = await Professional.create({
-        name, email, password:encryptedPassword, number_tel
-    })
+//     const salt = await bcrypt.genSalt(8);
+//         const encryptedPassword = await bcrypt.hash(password, salt);
 
-    const token = generateJWT(professional.id)
+//         // Crea el profesional
+//         const professional = await Professional.create({
+//             name,
+//             email,
+//             password: encryptedPassword,
+//             number_tel,
+//         });
 
-    const category = await Category.create({
-        professional_id: professional.id,
-        name_category
-    })
+//         // Busca o crea la categoría si aún no existe
+//         let category = await Category.findOne({
+//             where: {
+//                 name_category,
+//             },
+//         });
 
-    return res.status(201).json({
-        status: "Success",
-        token,
-        professional
-    })
-})
+//         if (!category) {
+//             category = await Category.create({
+//                 name_category,
+//             });
+//         }
+
+//         // Asocia el profesional a la categoría
+//         //await professional.addCategory(category);
+
+//         const token = generateJWT(professional.id);
+
+//         return res.status(201).json({
+//             status: "Success",
+//             token,
+//             professional,
+//         });})
+
+exports.createProfessional = catchAsync(async (req, res) => {
+    try {
+        const { name, email, password, name_category, number_tel } = req.body;
+
+        const salt = await bcrypt.genSalt(8);
+        const encryptedPassword = await bcrypt.hash(password, salt);
+
+        const professional = await Professional.create({
+            name,
+            email,
+            cat_name: name_category,
+            password: encryptedPassword,
+            number_tel,
+        });
+
+        const [category] = await Category.findOrCreate({
+            where: {
+                name_category,
+            },
+        });
+
+        await professional.addCategory(category);
+
+        const token = generateJWT(professional.id);
+
+        return res.status(201).json({
+            status: "Success",
+            token,
+            professional,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: "Error",
+            message: "Error al crear el profesional",
+        });
+    }
+});
+
 
 exports.MyPerfilProfessional = catchAsync(async(req, res) => {
     const {sessionProfessional} = req
@@ -60,7 +116,11 @@ exports.allProfessionals = catchAsync(async(req, res) => {
                 model: Review
             },
             {
-                model: Category
+                model: Category,
+                attributes: [
+                    'id',
+                    [fn('UPPER', col('name_category')), 'name_category']
+                ]
             }
           ],  
     })
@@ -185,5 +245,30 @@ exports.login = catchAsync(async(req, res, next) => {
 
 exports.updateReview = catchAsync(async(req, res) => {
     
+})
+
+exports.professionalsByCategory = catchAsync(async(req, res, next) => {
+    const {id} = req.params
+
+
+    const categories = await Category.findOne({
+        where: {
+            id
+        },
+        include: [
+            {model: Professional,
+                include:[{model:Job}]
+                
+            }
+            
+        ]  
+    })
+    
+
+    return res.status(200).json({
+        status: "Succes",
+        categories
+    })
+
 })
 
