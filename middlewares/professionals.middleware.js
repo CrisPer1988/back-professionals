@@ -17,11 +17,12 @@ exports.validIfExistProfessional = catchAsyn(async(req, res, next) => {
         include: [
             {
                 model: Review,
+                
                 include: [
                     {model: User}
-                ]
+                ],
+                
             },
-       
             {
                 model: Category
             },
@@ -29,12 +30,18 @@ exports.validIfExistProfessional = catchAsyn(async(req, res, next) => {
                 model: Job,
                 where: { status: "active" },
             },
-        ]
-    })
+        ],
+        order: [[{model: Review}, "id", "DESC"]]
+       
+    },
+    
+    )
 
     if(!professional){
         return next(new AppError(`Professional id: ${id} not found`))
     }
+
+    console.log(professional);
 
     req.professional = professional
     next()

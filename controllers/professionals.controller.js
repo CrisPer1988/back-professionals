@@ -113,7 +113,7 @@ exports.allProfessionals = catchAsync(async(req, res) => {
               where: { status: "active" },
             },
             {
-                model: Review
+                model: Review,
             },
             {
                 model: Category,
