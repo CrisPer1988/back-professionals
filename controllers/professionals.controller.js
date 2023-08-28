@@ -50,7 +50,7 @@ const { Op, fn, col } = require('sequelize');
 
 exports.createProfessional = catchAsync(async (req, res) => {
     try {
-        const { name, email, password, name_category, number_tel } = req.body;
+        const { name, email, password, cat_name, number_tel } = req.body;
 
         const salt = await bcrypt.genSalt(8);
         const encryptedPassword = await bcrypt.hash(password, salt);
@@ -58,14 +58,14 @@ exports.createProfessional = catchAsync(async (req, res) => {
         const professional = await Professional.create({
             name,
             email,
-            cat_name: name_category,
+            cat_name,
             password: encryptedPassword,
             number_tel,
         });
 
         const [category] = await Category.findOrCreate({
             where: {
-                name_category,
+                name_category: cat_name
             },
         });
 
