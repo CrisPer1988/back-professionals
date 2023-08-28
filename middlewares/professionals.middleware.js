@@ -41,8 +41,6 @@ exports.validIfExistProfessional = catchAsyn(async(req, res, next) => {
         return next(new AppError(`Professional id: ${id} not found`))
     }
 
-    console.log(professional);
-
     req.professional = professional
     next()
 })
