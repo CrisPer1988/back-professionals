@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/v1/users", usersRouter)
-app.use("/api/v1/professionals", professionalsRouter)
+app.use("/professionals", professionalsRouter)
 app.use("/api/v1/jobs", jobsRouter)
 app.use("/api/v1/reviews", reviewsRouter)
 app.use("/api/v1/categories", categoriesRouter)
